@@ -11,9 +11,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 /**
  * 使用JDK自带的Zip处理类进行文件的压缩与解压
  *
@@ -21,7 +18,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public class ZipUtils {
 	
 	/**
-	 * 压缩文件（一个或多个）
+	 * 压缩文件（一个或多个）到指定压缩包
 	 */
 	public static void zip( String targetFilePath, String ... sourceFilePaths){
 		if( sourceFilePaths == null || sourceFilePaths.length == 0 ){
@@ -35,11 +32,13 @@ public class ZipUtils {
 			for( int i = 0; i < sourceFilePaths.length; i++ ){
 				File sourceFile = new File(sourceFilePaths[i]);
 				if( sourceFile.exists() ){
+					//目标文件不存在则创建文件
 					if( ! targetFile.exists() ){
 						targetFile.createNewFile();
 					}
 					String sourceFileName = sourceFile.getName();
 					ZipEntry entry = new ZipEntry(sourceFileName);
+					//设置压缩包的入口
 					zos.putNextEntry(entry);
 					bis = new BufferedInputStream(new FileInputStream(sourceFile));
 					while( bis.read(buffer) != -1){
@@ -49,7 +48,7 @@ public class ZipUtils {
 			}
 			bis.close();
 			zos.flush();
-			zos.finish();
+			zos.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -64,33 +63,27 @@ public class ZipUtils {
 		if( sourceFilePaths == null || sourceFilePaths.length == 0 ){
 			return;
 		}
+		//解压目录不存在则创建
 		File targetDir = new File(targetDirPath);
 		if( ! targetDir.exists() ){
 			targetDir.mkdirs();
 		}
 		try {
-			//BufferedOutputStream bos = null;
-			//ZipInputStream zis = null;
 			byte [] buffer = new byte[512];
 			for( int i = 0; i < sourceFilePaths.length; i++ ){
 				File sourceFile = new File(sourceFilePaths[i]);
 				ZipInputStream zis = new ZipInputStream(new FileInputStream(sourceFile));
 				ZipEntry entry = null;
+				//遍历压缩文件的各个入口
 				while( (entry=zis.getNextEntry()) != null ){
 					String fileName = entry.getName();
+					//创建对应的文件
 					File file = new File(targetDirPath+File.separator + fileName);
 					if( ! file.exists() ){
 						file.createNewFile();
 					}
+					//进行文件的写入
 					BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file,true));
-					if( fileName.endsWith("xlsx") ){
-						Workbook wb = new XSSFWorkbook();
-						wb.write(bos);
-						zis.closeEntry();
-						bos.flush();
-						bos.close();
-						continue;
-					}
 					while( zis.read(buffer) != -1 ){
 						bos.write(buffer);
 					}
@@ -108,7 +101,6 @@ public class ZipUtils {
 		} catch( Exception e ){
 			e.printStackTrace();
 		}
-		
 	}
 	
 }

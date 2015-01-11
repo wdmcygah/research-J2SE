@@ -22,7 +22,7 @@ public class SimpleEntity {
 	@Email(message="邮箱格式不正确")
 	private String email;
 	
-	@Pattern(regexp="/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{5,10}$/",message="密码必须是5~10位数字和字母的组合")
+	@Pattern(regexp="(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{5,10}",message="密码必须是5~10位数字和字母的组合")
 	private String password;
 	
 	@AssertTrue(message="字段必须为真")

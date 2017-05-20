@@ -43,27 +43,24 @@ public class MessageFormatDemo {
       System.out.println();
  
       ResourceBundle messages = 
-         ResourceBundle.getBundle("MessageBundle",currentLocale);
+         ResourceBundle.getBundle("i18n/Message",currentLocale);
  
       Object[] messageArguments = {
-         messages.getString("planet"),
-         new Integer(7),
-         new Date()
+         new Date(),
+         messages.getString("goods"),
+         "taobao",
+         65.00
       };
  
-      MessageFormat formatter = new MessageFormat("");
-      formatter.setLocale(currentLocale);
- 
-      formatter.applyPattern(messages.getString("template"));
+      MessageFormat formatter = new MessageFormat(messages.getString("template"),currentLocale );
       String output = formatter.format(messageArguments);
- 
       System.out.println(output);
  
    }
  
    static public void main(String[] args) {
-      displayMessage(new Locale("en", "US"));
+      displayMessage(new Locale("zh", "CN"));
       System.out.println();
-      displayMessage(new Locale("de", "DE"));
+      displayMessage(new Locale("en", "US"));
    }
 }
